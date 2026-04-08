@@ -17,10 +17,6 @@
 - 再生終了時に自動的に次の動画へ
 - キーボードショートカット
 
-## スクリーンショット
-
-![mp4_player](https://github.com/user-attachments/assets/placeholder.png)
-
 ## インストール
 
 ### pip を使用

@@ -35,10 +35,11 @@ COLOR_BTN_HOVER = (80, 80, 80)
 
 # ボタン定義: (label, x_center_offset_from_center, width)
 BUTTON_DEFS: list[tuple[str, int, int]] = [
-    ("prev", -120, 50),   # ⏮
-    ("stop", -50, 50),    # ⏹
-    ("play", 0, 60),      # ▶ / ⏸
-    ("next", 70, 50),     # ⏭
+    ("prev", -150, 50),    # ⏮
+    ("stop", -80, 50),     # ⏹
+    ("play", 0, 60),       # ▶ / ⏸
+    ("next", 80, 50),      # ⏭
+    ("repeat", 150, 50),   # 🔁
 ]
 
 
@@ -245,6 +246,7 @@ class Mp4Player:
         self.last_frame: Optional[np.ndarray] = None
         self.play_start_time: float = 0.0
         self.play_start_frame: int = 0
+        self.repeat: bool = False
         self.audio: AudioPlayer = AudioPlayer()
 
         # フォント
@@ -378,7 +380,12 @@ class Mp4Player:
 
             cx = (x1 + x2) // 2
             cy = (y1 + y2) // 2
-            color = COLOR_HIGHLIGHT if name == "play" else COLOR_TEXT
+            if name == "play":
+                color = COLOR_HIGHLIGHT
+            elif name == "repeat" and self.repeat:
+                color = COLOR_HIGHLIGHT
+            else:
+                color = COLOR_TEXT
 
             if name == "play":
                 if self.is_playing:
@@ -402,6 +409,14 @@ class Mp4Player:
                 pts = np.array([[cx - 7, cy - 7], [cx - 7, cy + 7], [cx + 3, cy]], np.int32)
                 cv2.fillPoly(bar, [pts], color)
                 cv2.rectangle(bar, (cx + 5, cy - 7), (cx + 7, cy + 7), color, -1)
+            elif name == "repeat":
+                # 🔁 リピート: 循環矢印を描画
+                cv2.ellipse(bar, (cx, cy), (8, 6), 0, 30, 330, color, 2)
+                # 矢印の先端
+                pts = np.array([
+                    [cx + 7, cy - 6], [cx + 7, cy], [cx + 3, cy - 3]
+                ], np.int32)
+                cv2.fillPoly(bar, [pts], color)
 
         # 時間表示（ボタンの左側）
         current_sec = self.current_frame / self.fps if self.fps > 0 else 0
@@ -458,6 +473,8 @@ class Mp4Player:
                     self._prev_video()
                 elif name == "next":
                     self._next_video()
+                elif name == "repeat":
+                    self.repeat = not self.repeat
                 return
 
     def _next_video(self) -> None:
@@ -545,8 +562,11 @@ class Mp4Player:
                 while self.current_frame < target_frame:
                     ret, f = self.cap.read() if self.cap is not None else (False, None)
                     if not ret:
-                        # 動画終了 → 次の動画へ
-                        self._next_video()
+                        # 動画終了 → リピートONなら同じ曲、OFFなら次の動画
+                        if self.repeat:
+                            self._load_video(self.current_index)
+                        else:
+                            self._next_video()
                         break
                     self.current_frame = int(self.cap.get(cv2.CAP_PROP_POS_FRAMES))
                     self.last_frame = f
@@ -575,6 +595,8 @@ class Mp4Player:
                 self._prev_video()
             elif key == ord('s'):
                 self._stop()
+            elif key == ord('r'):
+                self.repeat = not self.repeat
             elif ord('1') <= key <= ord('9'):
                 file_index = key - ord('1')
                 if file_index < len(self.mp4_files):

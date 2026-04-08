@@ -17,10 +17,6 @@ A simple MP4 player that sequentially plays all MP4 files in the current directo
 - Auto-advances to the next video when playback finishes
 - Keyboard shortcuts
 
-## Screenshot
-
-![mp4_player](https://github.com/user-attachments/assets/placeholder.png)
-
 ## Installation
 
 ### Using pip

@@ -4,7 +4,7 @@ A simple MP4 player that sequentially plays all MP4 files in the current directo
 
 ## Overview
 
-`mp4_player` is a lightweight video player built with Python (OpenCV + tkinter). It scans the current directory for `.mp4` files and plays them sequentially with a dark-themed GUI.
+`mp4_player` is a lightweight video player built with Python and OpenCV. It scans the current directory for `.mp4` files and plays them sequentially with a dark-themed GUI. No tkinter or other GUI framework required.
 
 ## Features
 
@@ -47,29 +47,22 @@ mp4_player
 | Key | Action |
 |-----|--------|
 | `Space` | Play / Pause |
-| `→` | Next video |
-| `←` | Previous video |
-| `Esc` | Quit |
-
-### Controls
-
-| Button | Action |
-|--------|--------|
-| ⏮ 前へ | Previous video |
-| ▶ 再生 / ⏸ 一時停止 | Play / Pause |
-| ⏹ 停止 | Stop (return to beginning) |
-| ⏭ 次へ | Next video |
+| `N` | Next video |
+| `P` | Previous video |
+| `S` | Stop (return to beginning) |
+| `1`-`9` | Select video by number |
+| `Q` / `Esc` | Quit |
+| Mouse click | Seek (click on the seek bar) |
 
 ## Requirements
 
 - Python 3.10 or higher
-- tkinter (usually included with Python)
 
 Dependencies installed automatically:
-- opencv-python >= 4.8.0
+- opencv-python >= 4.8.0, < 4.11
 - Pillow >= 10.0.0
 
-> **Note:** This player displays video only (no audio playback). Audio support may be added in a future release.
+> **Note:** Audio playback requires `ffmpeg` and `afplay` (macOS built-in). If `ffmpeg` is not installed, the player will work in video-only mode.
 
 ## License
 
